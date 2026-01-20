@@ -1,0 +1,29 @@
+{
+  "model_path": "/data-store/zhaoqiannian/models/DeepSeek/DeepSeek-R1-Distill-Qwen-1.5B",
+  "outputs_root": "/data-store/zhaoqiannian/workspace/evalscope/local_bench/outputs",
+  "logs_root": "/data-store/zhaoqiannian/workspace/evalscope/local_bench/logs",
+
+  "common_args": {
+    "eval_batch_size": 1,
+    "timeout_ms": 60000,
+    "seed": 42,
+    "use_cache": false
+  },
+
+  "datasets": {
+    "aime25": {
+      "dataset_id": "opencompass/AIME2025",
+      "subset_list": ["AIME2025-I", "AIME2025-II"]
+    },
+
+    "aime24": {
+      "dataset_id": "HuggingFaceH4/aime_2024",
+      "subset_list": ["default"]
+    },
+
+     "math_500": {
+      "dataset_id": "AI-ModelScope/MATH-500",
+      "subset_list": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5"]
+    }
+  }
+}
