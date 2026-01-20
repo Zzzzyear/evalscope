@@ -102,10 +102,9 @@ def build_generation_config(cfg: Dict[str, Any], timeout_s: float, seed: int) ->
         "timeout": timeout_s,
         "batch_size": 1,
 
-        "max_tokens": 32768,
-        "max_new_tokens": 32768,
+        "max_tokens": 16384,
+        "max_new_tokens": 16384,
 
-        # 你同事那套采样
         "top_p": 0.95,
         "temperature": 0.6,
         "do_sample": True,
@@ -363,3 +362,80 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ========================= run_task.py CLI 参数说明 =========================
+#
+# 该脚本支持两种模式：dispatch（调度） / worker（执行单任务）
+#
+# ----------------------------- 1) 通用参数 -----------------------------
+#
+# --mode {dispatch,worker}
+#   - 默认: dispatch
+#   - dispatch: 读取 default.json -> 自动拆分 subset -> 按 GPU 列表排队分发 -> 启动多个 worker 子进程
+#   - worker  : 只执行一个最小任务（dataset + 可选 subset），通常由 dispatch 自动启动
+#
+# --tag <string>
+#   - 作用：
+#       dispatch: 作为本次批次 batch_tag，用于生成每个任务的输出 tag（目录名的一部分）
+#       worker  : 必填（用于输出目录名与日志名），通常是 dispatch 生成的 `${batch_tag}__${dataset}__${subset}`
+#   - 规则：会被 sanitize() 处理，非 [a-zA-Z0-9_-] 的字符替换成 "_"
+#   - 默认：
+#       dispatch: 若不传，会自动生成 "run_%Y%m%d_%H%M%S"
+#       worker  : 必须传，否则直接报错
+#
+# ----------------------------- 2) dispatch 模式参数 -----------------------------
+#
+# --gpus "0,1,2,3"
+#   - 仅在 dispatch 有意义（worker 不用）
+#   - 含义：可用的“物理 GPU id 列表”，用逗号分隔
+#   - 示例：
+#       --gpus "0"           -> 只用物理卡 0
+#       --gpus "0,1,3,6"     -> 只在物理卡 0/1/3/6 上跑任务
+#       --gpus "4,7"         -> 只在物理卡 4/7 上跑任务
+#   - 行为：每个 GPU 同时最多跑 1 个任务；任务排队，空闲 GPU 取下一个任务
+#
+# --only "aime25,math_500"
+#   - 仅在 dispatch 有意义
+#   - 含义：只跑 default.json 的 datasets 中列出的这些 key（逗号分隔）
+#   - 示例：
+#       --only "aime25"              -> 只跑 aime25（会自动拆 AIME2025-I/II）
+#       --only "math_500,aime25"     -> 只跑这两个
+#   - 注意：必须写 default.json 里 datasets 的 key 名，不是 pretty_name，不是 dataset_id。
+#
+# ----------------------------- 3) worker 模式参数（内部用，dispatch 会自动填） -----------------------------
+#
+# --dataset <string>
+#   - worker 必填
+#   - 取值：default.json 的 datasets key，比如 "aime25" / "aime24" / "math_500"
+#
+# --subset <string>
+#   - worker 可选
+#   - 含义：若传，则只跑该 subset；否则使用 default.json 中该 dataset 的 subset_list（或默认 ["default"]）
+#   - 示例：
+#       --subset "AIME2025-I"
+#       --subset "Level 3"
+#
+# --gpu <int>
+#   - worker 可选（但 dispatch 调用 worker 时一定会传）
+#   - 含义：绑定到某个“物理 GPU id”
+#   - 实现：会设置环境变量 CUDA_VISIBLE_DEVICES=<gpu>
+#   - 重要细节：
+#       CUDA_VISIBLE_DEVICES=4 表示“本进程只看见物理卡 4，并且它会变成逻辑的 cuda:0”
+#       所以 transformers/evalscope 里看到的通常是 cuda:0，但实际对应物理卡 4
+#
+# ----------------------------- 4) 常见用法 -----------------------------
+#
+# A) 一条命令跑全部（自动拆 subset + 自动分配 GPU）
+#   python run_task.py --mode dispatch --gpus "0,1,2,3"
+#
+# B) 只跑某些数据集
+#   python run_task.py --mode dispatch --gpus "0,1" --only "aime25,math_500"
+#
+# C) 指定批次 tag（输出目录可控）
+#   python run_task.py --mode dispatch --gpus "0,1" --tag "0120_3"
+#
+# D) 单独调试 worker（只跑一个 subset）
+#   python run_task.py --mode worker --dataset aime25 --subset "AIME2025-I" --gpu 0 --tag "debug_aime25_I"
+#
+# ======================================================================================

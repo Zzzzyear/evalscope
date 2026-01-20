@@ -1,5 +1,5 @@
 {
-  "model_path": "/data-store/zhaoqiannian/models/DeepSeek/DeepSeek-R1-Distill-Qwen-1.5B",
+  "model_path": "/data-store/zhaoqiannian/models/Qwen/Qwen3-4B-Base",
   "outputs_root": "/data-store/zhaoqiannian/workspace/evalscope/local_bench/outputs",
   "logs_root": "/data-store/zhaoqiannian/workspace/evalscope/local_bench/logs",
 

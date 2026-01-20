@@ -10,7 +10,7 @@ MODE="dispatch"
 
 # dispatch 用：可用 GPU（物理 id，逗号分隔）
 # 例：一张卡用 0；两张卡用 4,7；八卡想用 0,1,2,3,4,5,6,7
-GPUS="1"
+GPUS="0"
 
 # dispatch 用：只跑哪些数据集（写 configs/default.json 里的 datasets key，逗号分隔；空=全跑）
 # 例：ONLY="aime25" 或 ONLY="aime25,math_500"
@@ -21,7 +21,8 @@ ONLY=""
 # TAG="qwen3_4b_aime25_0120_1"
 # TAG="qwen3_4b_all_0120_3"
 # TAG="qwen3_4b_aime2425_0120_1"
-TAG="ds_1.5b_all_0120_1"
+# TAG="ds_1.5b_all_0120_1"
+TAG="qwen3_4b_all_0120_max16k_1"
 
 # worker 用（仅 MODE=worker 时生效）：
 # 跑哪个数据集（default.json 的 key）
