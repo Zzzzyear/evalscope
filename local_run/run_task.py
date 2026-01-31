@@ -85,13 +85,13 @@ def build_generation_config(timeout_s: float, seed: int) -> Dict[str, Any]:
         "timeout": timeout_s,
         "batch_size": 1,
 
-        "max_tokens": 32768,
-        "max_new_tokens": 32768,
+        "max_tokens": 3000,
+        "max_new_tokens": 3000,
 
-        "temperature": 0.6,
-        "top_p": 0.95,
-        "top_k": 20,
-        "do_sample": True,
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 1.0,
+        "do_sample": False,
 
         "n": 1,
         "num_return_sequences": 1,

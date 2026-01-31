@@ -1,5 +1,5 @@
 {
-  "model_path": "/data/zhaoqn/models/Qwen/Qwen3-4B-Base",
+  "model_path": "/data/zhaoqn/models/Qwen/Qwen2.5-Math-7B",
   "outputs_root": "/data/zhaoqn/workspace/evalscope/local_bench/outputs",
   "logs_root": "/data/zhaoqn/workspace/evalscope/local_bench/logs",
 
